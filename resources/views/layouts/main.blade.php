@@ -219,15 +219,4 @@
             </div>
         </footer>
     </div>
-
-    <!-- Script para establecer el enlace activo al cargar la página -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const dashboardUrl = @json(route('dashboard')); // Escapar la URL con JSON
-            const dashboardLink = document.querySelector(`.main-nav-link[href="${dashboardUrl}"]`);
-            if (dashboardLink) {
-                dashboardLink.classList.add('active');
-            }
-        });
-    </script>
 </body>
