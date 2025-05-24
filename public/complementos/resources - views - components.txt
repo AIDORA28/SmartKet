@@ -1,0 +1,40 @@
+dropdown.blade.php:
+
+@props([
+    'photo' => null,
+    'title',
+    'subtitle' => null,
+    'links' => [],
+    'footerLink' => null,
+    'footerText' => 'Cerrar',
+    'footerClass' => 'btn-primary',
+])
+
+<li class="nav-item dropdown user-menu">
+    <a class="nav-link text-white d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+        @if($photo)
+            <img src="{{ asset($photo) }}" alt="Foto de {{ $title }}" class="user-photo me-1" loading="lazy">
+        @endif
+        <span>{{ $title }}</span>
+        @if($subtitle)
+            <span class="badge bg-red ms-1">{{ $subtitle }}</span>
+        @endif
+    </a>
+    <div class="dropdown-menu dropdown-menu-end">
+        <div class="user-header text-center">
+            @if($photo)
+                <img src="{{ asset($photo) }}" alt="Foto de {{ $title }}" class="user-photo mb-2" loading="lazy">
+            @endif
+            <p>{{ $title }}</p>
+            @if($subtitle)
+                <p class="text-muted">{{ $subtitle }}</p>
+            @endif
+            @foreach($links as $link)
+                <p class="text-muted">{{ $link }}</p>
+            @endforeach
+        </div>
+        <div class="user-footer text-center">
+            <a href="#" class="btn btn-sm {{ $footerClass }}">{{ $footerText }}</a>
+        </div>
+    </div>
+</li>

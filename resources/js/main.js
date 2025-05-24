@@ -1,0 +1,202 @@
+import Chart from 'chart.js/auto';
+
+// Utilidades para manejar localStorage de forma segura
+function setLocalStorage(key, value) {
+    try {
+        localStorage.setItem(key, value);
+    } catch (e) {
+        console.warn('localStorage no está disponible:', e);
+    }
+}
+
+function getLocalStorage(key) {
+    try {
+        return localStorage.getItem(key);
+    } catch (e) {
+        console.warn('localStorage no está disponible:', e);
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Inicializar el gráfico de ventas para dashboard.blade.php
+    const salesChartMain = document.getElementById('salesChartMain');
+    if (salesChartMain) {
+        new Chart(salesChartMain, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May'],
+                datasets: [{
+                    label: 'Ventas Mensuales ($)',
+                    data: [1200, 1500, 800, 2000, 1800],
+                    borderColor: '#dc3545',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    }
+
+    // Elementos del DOM
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebar = document.querySelector('.main-sidebar');
+    const contentWrapper = document.querySelector('.main-content-wrapper');
+    const sidebarMenu = document.querySelector('.main-sidebar-menu');
+
+    if (sidebarToggle && sidebar && contentWrapper && sidebarMenu) {
+        // Estado inicial del sidebar
+        const isCollapsed = getLocalStorage('sidebarCollapsed') === 'true';
+        if (isCollapsed) {
+            sidebar.classList.add('collapsed');
+            contentWrapper.classList.add('collapsed');
+        }
+
+        // Toggle del sidebar
+        sidebarToggle.addEventListener('click', function () {
+            if (window.innerWidth <= 991.98) {
+                sidebar.classList.toggle('active');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                contentWrapper.classList.toggle('collapsed');
+                setLocalStorage('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                if (sidebar.classList.contains('collapsed')) {
+                    // Cerrar todos los submenús al colapsar el sidebar
+                    document.querySelectorAll('.main-submenu').forEach(collapse => {
+                        collapse.classList.remove('show');
+                    });
+                }
+            }
+            sidebar.offsetHeight; // Forzar reflow
+        });
+
+        // Cerrar sidebar al hacer clic fuera en móviles
+        document.addEventListener('click', function (e) {
+            if (window.innerWidth <= 991.98 && sidebar.classList.contains('active')) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Asegurar que el sidebar esté en el estado correcto al cambiar el tamaño de la ventana
+        window.addEventListener('resize', function () {
+            if (window.innerWidth <= 991.98) {
+                sidebar.classList.remove('collapsed');
+                contentWrapper.classList.remove('collapsed');
+            } else {
+                const isCollapsed = getLocalStorage('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    contentWrapper.classList.add('collapsed');
+                }
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Limpiar las posiciones de los submenús al mostrar la página (incluye retroceder)
+        window.addEventListener('pageshow', function () {
+            document.querySelectorAll('.main-submenu').forEach(submenu => {
+                submenu.style.top = '';
+            });
+        });
+
+        // Ajustar la posición del submenú flotante en modo colapsado (PC y tablet)
+        const navItems = document.querySelectorAll('.main-sidebar.collapsed .nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('mouseenter', function () {
+                if (window.innerWidth > 991.98) {
+                    const submenu = this.querySelector('.main-submenu');
+                    if (submenu) {
+                        const sidebarRect = sidebar.getBoundingClientRect();
+                        const itemRect = this.getBoundingClientRect();
+                        const sidebarScrollTop = sidebarMenu.scrollTop;
+                        const topPosition = (itemRect.top - sidebarRect.top + sidebarScrollTop) - 8;
+                        submenu.style.top = `${topPosition}px`;
+                    }
+                }
+            });
+
+            item.addEventListener('mouseleave', function () {
+                if (window.innerWidth > 991.98) {
+                    const submenu = this.querySelector('.main-submenu');
+                    if (submenu) {
+                        submenu.style.top = '';
+                    }
+                }
+            });
+
+            // Permitir cambiar el botón activo en modo colapsado
+            const link = item.querySelector('.main-nav-link');
+            if (link) {
+                link.addEventListener('click', function (e) {
+                    if (sidebar.classList.contains('collapsed') && window.innerWidth > 991.98) {
+                        e.preventDefault();
+                        const allLinks = document.querySelectorAll('.main-nav-link');
+                        allLinks.forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            }
+        });
+
+        // Delegación de eventos para los enlaces del sidebar
+        sidebarMenu.addEventListener('click', function (e) {
+            const link = e.target.closest('.main-nav-link[data-bs-toggle="collapse"]');
+            if (link) {
+                e.preventDefault();
+                if (!sidebar.classList.contains('collapsed') || window.innerWidth <= 991.98) {
+                    const targetId = link.getAttribute('data-bs-target');
+                    const targetCollapse = document.querySelector(targetId);
+                    const allLinks = document.querySelectorAll('.main-nav-link[data-bs-toggle="collapse"]');
+
+                    allLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    document.querySelectorAll('.main-submenu').forEach(collapse => {
+                        if (collapse !== targetCollapse) {
+                            collapse.classList.remove('show');
+                        }
+                    });
+                }
+            }
+
+            const subLink = e.target.closest('.main-sub-nav-link');
+            if (subLink) {
+                const subLinks = document.querySelectorAll('.main-sub-nav-link');
+                subLinks.forEach(l => l.classList.remove('active'));
+                subLink.classList.add('active');
+            }
+        });
+
+        // Rotar el ícono de la flecha al abrir/cerrar submenús
+        document.querySelectorAll('.main-submenu').forEach(submenu => {
+            submenu.addEventListener('shown.bs.collapse', function () {
+                const link = document.querySelector(`[data-bs-target="#${this.id}"]`);
+                const angleIcon = link.querySelector('.main-nav-angle');
+                angleIcon.classList.remove('fa-angle-left');
+                angleIcon.classList.add('fa-angle-down');
+            });
+
+            submenu.addEventListener('hidden.bs.collapse', function () {
+                const link = document.querySelector(`[data-bs-target="#${this.id}"]`);
+                const angleIcon = link.querySelector('.main-nav-angle');
+                angleIcon.classList.remove('fa-angle-down');
+                angleIcon.classList.add('fa-angle-left');
+            });
+        });
+
+        // Soporte para navegación por teclado
+        sidebarMenu.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const link = e.target.closest('.main-nav-link[data-bs-toggle="collapse"]');
+                if (link) {
+                    e.preventDefault();
+                    link.click();
+                }
+            }
+        });
+    }
+});

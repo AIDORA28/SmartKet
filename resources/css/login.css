@@ -1,0 +1,57 @@
+/* Estilos para el login */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.login-box {
+    background: #fff5f5;
+    border: 1px solid #dc3545;
+    border-radius: 15px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+    padding: 2.5rem;
+    max-width: 450px;
+    width: 100%;
+}
+
+.login-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.login-logo img {
+    max-width: 150px;
+    border-radius: 50%;
+    border: 3px solid #dc3545;
+    padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+.login-logo img:hover {
+    transform: scale(1.05);
+}
+
+.login-box-body {
+    text-align: center;
+}
+
+.login-box-msg {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #dc3545;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(145deg, #ffffff, #ffe6e6);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    text-align: center !important;
+}
+
+.login-input-group-custom {
+    max-width: 350px;
+}

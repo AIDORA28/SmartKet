@@ -1,0 +1,49 @@
+.indice-card-custom {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    background: #ffffff;
+}
+
+.indice-card-header-custom {
+    background: transparent;
+    border-bottom: none;
+    padding: 0;
+}
+
+.indice-tab-content-custom .table thead {
+    background: var(--gradient-light);
+    color: var(--text-dark);
+}
+
+.indice-tab-content-custom .table tbody tr:hover {
+    background-color: var(--background-light);
+}
+
+.nav-tabs {
+    border-bottom: none;
+}
+
+.nav-tabs .nav-link {
+    color: var(--text-muted);
+    border: none;
+    border-radius: 0;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+    background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+#salesChart, #stockChart {
+    max-height: 300px;
+}
