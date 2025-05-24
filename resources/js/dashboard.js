@@ -9,6 +9,28 @@ document.addEventListener('DOMContentLoaded', function () {
     let cart = [];
     let sales = [];
     let purchases = [];
+    // Cargar productos
+    fetch('/api/productos')
+        .then(response => response.json())
+        .then(productos => {
+            const table = document.getElementById('productsTable').querySelector('tbody');
+            productos.forEach(producto => {
+                const row = table.insertRow();
+                row.setAttribute('data-id', producto.id);
+                row.innerHTML = `
+                    <td>${producto.id}</td>
+                    <td>${producto.name}</td>
+                    <td>${producto.categoria.categoria}</td>
+                    <td>${producto.stock}</td>
+                    <td>$${producto.price.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1 edit-product" data-id="${producto.id}"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn btn-sm btn-danger delete-product" data-id="${producto.id}"><i class="fas fa-trash"></i> Eliminar</button>
+                    </td>
+                `;
+            });
+            updateWidgets();
+        });
 
     // Gráficos de estadísticas
     const salesChart = new Chart(document.getElementById('salesChart'), {
