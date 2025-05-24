@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 })->name('welcome');
 
 require __DIR__.'/auth.php';
