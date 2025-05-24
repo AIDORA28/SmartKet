@@ -1,11 +1,7 @@
 import './bootstrap';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import $ from 'jquery';
-window.jQuery = window.$ = $;
 
-// Importar Chart.js
-import 'chart.js/auto';
+import Alpine from 'alpinejs';
 
-// Importar scripts específicos
-import './main.js';
-import './dashboard.js';
+window.Alpine = Alpine;
+
+Alpine.start();

@@ -1,38 +1,35 @@
-@props([
-    'photo' => null,
-    'title',
-    'subtitle' => null,
-    'links' => [],
-    'footerLink' => null,
-    'footerText' => 'Cerrar',
-    'footerClass' => 'btn-primary',
-])
+@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-white'])
 
-<li class="nav-item dropdown user-menu">
-    <a class="nav-link text-white d-flex align-items-center" href="#" data-bs-toggle="dropdown">
-        @if($photo)
-            <img src="{{ asset($photo) }}" alt="Foto de {{ $title }}" class="user-photo me-1" loading="lazy">
-        @endif
-        <span>{{ $title }}</span>
-        @if($subtitle)
-            <span class="badge bg-red ms-1">{{ $subtitle }}</span>
-        @endif
-    </a>
-    <div class="dropdown-menu dropdown-menu-end">
-        <div class="user-header text-center">
-            @if($photo)
-                <img src="{{ asset($photo) }}" alt="Foto de {{ $title }}" class="user-photo mb-2" loading="lazy">
-            @endif
-            <p>{{ $title }}</p>
-            @if($subtitle)
-                <p class="text-muted">{{ $subtitle }}</p>
-            @endif
-            @foreach($links as $link)
-                <p class="text-muted">{{ $link }}</p>
-            @endforeach
-        </div>
-        <div class="user-footer text-center">
-            <a href="#" class="btn btn-sm {{ $footerClass }}">{{ $footerText }}</a>
+@php
+$alignmentClasses = match ($align) {
+    'left' => 'ltr:origin-top-left rtl:origin-top-right start-0',
+    'top' => 'origin-top',
+    default => 'ltr:origin-top-right rtl:origin-top-left end-0',
+};
+
+$width = match ($width) {
+    '48' => 'w-48',
+    default => $width,
+};
+@endphp
+
+<div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
+    <div @click="open = ! open">
+        {{ $trigger }}
+    </div>
+
+    <div x-show="open"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="absolute z-50 mt-2 {{ $width }} rounded-md shadow-lg {{ $alignmentClasses }}"
+            style="display: none;"
+            @click="open = false">
+        <div class="rounded-md ring-1 ring-black ring-opacity-5 {{ $contentClasses }}">
+            {{ $content }}
         </div>
     </div>
-</li>
+</div>
