@@ -1,22 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 })->name('welcome');
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+require __DIR__.'/auth.php';
 
-// Rutas protegidas (requieren autenticación)
-//Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-    // Rutas del sidebar (temporales, puedes moverlas a controladores)
+
     Route::prefix('almacen')->group(function () {
         Route::get('articulos', function () {
             return view('almacen.articulos');
@@ -96,9 +93,8 @@ Route::get('/login', function () {
     Route::get('/acerca-de', function () {
         return view('acerca-de');
     })->name('acerca-de');
-//});
-//Ruta de logout (puedes ajustarla según tu lógica de autenticación)
-Route::post('/logout', function () {
-    auth()->logout();
-    return redirect()->route('login');
-})->name('logout');
+});
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
